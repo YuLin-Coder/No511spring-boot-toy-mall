@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <link rel="stylesheet" href="/layuiadmin/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/layuiadmin/style/admin.css" media="all">
+    <link rel="stylesheet" type="text/css" href="/select/formSelects-v4.css"/>
+</head>
+<style>
+    .layui-form-item{
+        margin-bottom: 8px;
+    }
+</style>
+<body>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div id="cardBodyDiv" class="layui-card-body" style="padding: 15px;">
+            <form class="layui-form layui-form-pane" action="" lay-filter="component-form-group">
+                <input type="hidden" name="id" th:value="${articleEntity.id}"/>
+                <input type="hidden" id="typeid" th:value="${articleEntity.childType}">
+                <input type="hidden" id="shopIds" th:value="${articleEntity.shopIds}">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="title" lay-verify="title" th:value="${articleEntity.title}"  maxlength="30" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">售卖商品</label>
+                    <div class="layui-input-block">
+                        <select name="shopIds" xm-select="relationUsers"
+                                xm-select-search="">
+                            <option value="">请选择售卖商品，如果购买成功文章作者将会获得提成，系统发布文章不参与提成</option>
+                            <option th:value="${obj.id}" th:utext="${obj.name+'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;提成:'+obj.royalty+'元'}" th:each="obj : ${shopEntities}" >1111</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">类型</label>
+                        <div class="layui-input-inline">
+                            <select name="childType" lay-verify="required" lay-search="" id="childType">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">是否置顶</label>
+                        <div class="layui-input-inline">
+                            <select name="top" class="selectedlv" th:attr="v=${articleEntity.top}" >
+                                <option value="false">不置顶</option>
+                                <option value="true">置顶</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">审核</label>
+                        <div class="layui-input-inline">
+                            <select name="status" class="selectedlv" th:attr='v=${articleEntity.status}' >
+                                <option value="1">通过</option>
+                                <option value="2">不通过</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">摘要</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="summary" lay-verify="title" maxlength="50" th:value="${articleEntity.summary}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标签</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="label" placeholder="多个标签用英文逗号隔开" lay-verify="title" maxlength="500" th:value="${articleEntity.label}" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">视频地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="vedio" th:value="${articleEntity.vedio}" placeholder="视频播放地址" maxlength="200" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="margin-top: 20px">
+                    <label class="layui-form-label">封面</label>
+                    <button type="button" class="layui-btn" id="mobileTest1" style="margin-top: -12px">
+                        <i class="layui-icon">&#xe67c;</i>上传封面
+                    </button>
+                    <img  id="mobileCoverImg" class="originalImg" th:src="${articleEntity.cover}"  style="height: 50px;min-width: 50px;"/>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">内容</label>
+                    <div class="layui-input-block">
+                        <div id="editor" style="height:200px;" >
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-layout-admin">
+                    <div class="layui-input-block">
+                        <div class="layui-footer" style="left: 0;">
+                            <a class="layui-btn" lay-submit="" lay-filter="component-form-demo1">保存</a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div id="mContent" style="display: none" th:utext="${articleEntity.content}">
+
+</div>
+<script src="/layuiadmin/layui/layui.js"></script>
+<script src="/select/formSelects-v4.js"></script>
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<script src="/base.js"></script>
+<script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.config.js"></script>
+<script type="text/javascript" charset="utf-8" src="/ueditor/ueditor.all.min.js"> </script>
+<script type="text/javascript" charset="utf-8" src="/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script type="text/javascript" charset="utf-8" src="/ueditor/addUploadImg.js"></script>
+<script>
+    selected();
+    //设置富文本
+    var ue = UE.getEditor('editor');
+    layui.config({
+        base: '/layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use(['index', 'form', 'laydate','upload'], function(){
+        var formSelects = layui.formSelects;
+        var $ = layui.$
+            ,admin = layui.admin
+            ,element = layui.element
+            ,layer = layui.layer
+            ,laydate = layui.laydate
+            ,form = layui.form;
+        formSelects.value('relationUsers', $("#shopIds").val().split(","));
+        form.render(null, 'component-form-group');
+        laydate.render({
+            elem: '#LAY-component-form-group-date'
+        });
+        uploadOneImg('#mobileTest1', 'information', function (res) {
+            if (res.code == 200) {
+                //上传完毕回调
+                $("#mobileCover").val(res.data);
+                $("#mobileCoverImg").attr("src", res.data);
+            } else {
+                layer.alert(res.msg, {icon: 2, skin: 'layui-layer-molv'})
+            }
+        }, 670, 460);
+        list(true);
+        ue.setContent($("#mContent").html());
+        function list(b){
+            basePost({
+                url:"/childType/childList.htm",
+                data:{type:$("#type").val()},
+                success:function (req) {
+                    if(req){
+                        $("#childType").html("");
+                        for (let i = 0; i <req.length ; i++) {
+                            $("#childType").append('<option value="'+req[i].id+'">'+req[i].name+'</option>');
+                        }
+                        if(b){
+                            $("#childType").val($("#typeid").val());
+                        }
+                        form.render(null);
+                    }
+                }
+            });
+
+        }
+
+        /* 监听提交 */
+        form.on('submit(component-form-demo1)', function(data){
+            if ( ue.getContent() == null ||  ue.getContent()== "") {
+                layer.alert("请输入内容")
+                return false;
+            }
+
+            var da = data.field;
+            da.content=ue.getContent();
+            da.cover = $("#mobileCoverImg").attr("src");
+            console.log(da)
+            layer.confirm('确定保存信息？', {
+                btn: ['确定','取消'], //按钮
+                skin: 'layui-layer-molv'
+            }, function(){
+                basePost({
+                    url:"/article/editData.htm",
+                    data:da,
+                    success:function (req) {
+                        layer.confirm('保存成功！', {
+                            title: '提示',
+                            btn: ['确定'], //按钮
+                            skin: 'layui-layer-molv',
+                            closeBtn: 0
+                        }, function(){
+                            window.parent.location.reload();
+                        });
+                    }
+                })
+            }, function(){
+            });
+            return false;
+        });
+    });
+
+</script>
+
+</body>
+
+</html>
+

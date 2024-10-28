@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>${article.title}</title>
+    <link rel="stylesheet" href="/res/layui/css/layui.css">
+    <link rel="stylesheet" href="/res/css/global.css">
+    <link rel="stylesheet" type="text/css" href="/layuiMall/res/static/css/main.css">
+    <link rel="stylesheet" type="text/css" href="/layuiMall/res/layui/css/layui.css">
+    <link href="/spop-gh-pages/dist/spop.min.css" rel="stylesheet"/>
+    <link href="/spop-gh-pages/src/styles.min.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="layui-container" style="overflow: hidden;">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12 content detail">
+            <div class="fly-panel detail-box">
+                <h1 th:text="${article.title}"></h1>
+                <h4 th:text="${article.summary}"></h4>
+                <div class="fly-detail-info">
+                    <span th:if="${article.top}" class="layui-badge layui-bg-green fly-detail-column">置顶精品文章</span>
+                    <span th:text="${article.time}"></span>
+                </div>
+                <div class="fly-detail-info" >
+                    <span th:each="lebel : ${lebels}"  class="layui-badge layui-bg-green fly-detail-column" th:text="${'#'+lebel}"></span>
+                </div>
+                <div class="detail-about" th:if="${customerEntity!=null}" >
+                    <a class="fly-avatar" >
+                        <img th:src="${customerEntity.header}" >
+                    </a>
+                    <div class="fly-detail-user" style="height:50px; ">
+                        <cite class="layui-hide-xs" th:text="${customerEntity.name}"></cite>
+                        <i class="iconfont icon-renzheng layui-hide-xs" th:if="${customerEntity.type==2}" ></i>
+                        <i class="layui-badge fly-badge-vip layui-hide-xs" th:if="${customerEntity.type==2}"  th:text="${customerEntity.authName}">主播主播主笔</i>
+                    </a>
+                    </div>
+                    <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
+                    </div>
+                </div>
+                <div class="detail-body photos" style="text-align: center;" th:if="${article.vedio!=null}" >
+                    <video autoplay="autoplay" controls="true" class="sss" th:src="${article.vedio}" style="height: 400px;" ></video>
+                </div>
+                <hr>
+                <div class="detail-body photos" th:utext=" ${article.content}">
+                </div>
+                <hr>
+                <div class="product-list-box" id="product-list-box">
+                    <div class="product-list-cont w1200">
+                        <h4>作者推荐</h4>
+                        <div class="product-item-box layui-clear" >
+                            <div onclick="shopInfo2(this)" class="list-item" th:attr="name=${obj.name},oid=${obj.id}"  th:each="obj : ${shopEntities}" style="height: 350px;">
+                                <a href="javascript:;"><img th:src="${obj.cover}" ></a>
+                                <p  th:text="${obj.name}"></p>
+                                <span th:text="${obj.discountPrice}"></span>  <del th:text="${obj.price}"></del>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="id" th:value="${id}">
+<input type="hidden" id="customerId" th:value="${article.customerId}">
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<script src="/layer/layer.js"></script>
+<script src="/base.js"></script>
+<script src="/spop-gh-pages/src/prism.js"></script>
+<script src="/spop-gh-pages/dist/spop.min.js"></script>
+<script src="/spop-gh-pages/src/scripts.min.js"></script>
+<script>
+    function shopInfo(b) {
+        location.href="/mobileShop/info.html?id="+$(b).attr("oid")
+    }
+    function shopInfo2(b) {
+        location.href="/mobileShop/info.html?customerId="+$("#customerId").val()+"&id="+$(b).attr("oid")
+    }
+    $(function () {
+        basePost({
+            url:"/article/shopList.html",
+            data:{
+                id: $("#id").val(),
+            },
+            success:function (req) {
+                if(req){
+                    for (var i = 0; i <req.length ; i++) {
+                        spop({
+                            template: "<div onclick='shopInfo(this)' oid='"+(req[i].id)+"' style='height: 200px;'>" +
+                                "<img src='"+(req[i].cover)+"' alt=''>" +
+                                "</div>",
+                            style: 'warn',
+                            position  : 'bottom-right',
+                            // autoclose: 3000
+                        });
+                    }
+                }
+            }
+        })
+    })
+
+
+    layui.config({
+        version: "3.0.0"
+        ,base: '/res/mods/'
+    }).extend({
+        fly: 'index'
+    }).use(['fly', 'face'], function(){
+        var $ = layui.$
+            ,fly = layui.fly;
+        //如果你是采用模版自带的编辑器，你需要开启以下语句来解析。
+        /*
+        $('.detail-body').each(function(){
+          var othis = $(this), html = othis.html();
+          othis.html(fly.content(html));
+        });
+        */
+    });
+</script>
+
+</body>
+</html>

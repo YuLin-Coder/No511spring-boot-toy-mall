@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>IT技术论坛管理</title>
+    <link rel="stylesheet" href="/res/layui/css/layui.css">
+    <link rel="stylesheet" href="/res/css/global.css">
+</head>
+<body  style="background-image: url(/bg.jpg);background-size: cover;">
+<div class="layui-container" >
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="fly-panel">
+                <div class="fly-panel-title fly-filter">
+                    <a>置顶</a>
+                </div>
+                <ul class="fly-list">
+                        <li th:each="article : ${topArticle}">
+                            <a  class="fly-avatar">
+                                <img th:src="${article.cover}" >
+                            </a>
+                            <h2>
+                                <a class="layui-badge">置顶</a>
+                                <a th:attr="href=${'/article/info.html?id='+article.id}"  th:text="${article.title}"></a>
+                            </h2>
+                            <div class="fly-list-info">
+                                <a  target="view_window"  >
+                                    <cite  th:if="${article.customerEntity != null }" th:text="${article.customerEntity.name}"></cite>
+                                    <cite  th:if="${article.customerEntity == null }" >系统发布</cite>
+                                    <span th:if="${article.customerEntity != null }">
+                                          <i class="iconfont icon-renzheng layui-hide-xs" th:if="${article.customerEntity.type == 2 }" ></i>
+                                        <i class="layui-badge fly-badge-vip" th:if="${article.customerEntity.type == 2 }" th:text="${article.customerEntity.authName}">
+                                        </i>
+                                    </span>
+
+                                </a>
+                                <span th:text="${#dates.format(article.time,'yyyy-MM-dd HH:mm:ss')}"></span>
+                                <span class="fly-list-nums"><i class="iconfont icon-pinglun1" title="评论"></i></span>
+                            </div>
+                        </li>
+                </ul>
+            </div>
+            <div class="fly-panel" style="margin-bottom: 0;">
+                <div class="fly-panel-title fly-filter">
+                    <a style="cursor:pointer"  class="layui-this types" onclick="typek(this)" oid="" >综合</a>
+                        <span th:each="childType : ${childTypes}">
+                             <span class="fly-mid"></span>
+                        <a style="cursor:pointer"  class="types" onclick="typek(this)" th:attr="oid=${childType.id}"  th:text="${childType.name}"></a>
+                        </span>
+                    <span class="fly-filter-right layui-hide-xs"><a href="" class="layui-this">按最新排序</a><span class="fly-mid"></span></span>
+                </div>
+                <ul class="fly-list">
+                    <li th:each="article : ${articleEntities}" th:class="${'article '+article.childType}">
+                        <a  class="fly-avatar">
+                            <img th:src="${article.cover}" >
+                        </a>
+                        <h2>
+                            <a class="layui-badge" th:text="${article.childName}">置顶</a>
+                            <a th:attr="href=${'/article/info.html?id='+article.id}"  th:text="${article.title}"></a>
+                        </h2>
+                        <div class="fly-list-info">
+                            <a  target="view_window"  >
+                                <cite  th:if="${article.customerEntity != null }" th:text="${article.customerEntity.name}"></cite>
+                                <cite  th:if="${article.customerEntity == null }" >系统发布</cite>
+                                <span th:if="${article.customerEntity != null }">
+                                          <i class="iconfont icon-renzheng layui-hide-xs" th:if="${article.customerEntity.type == 2 }" ></i>
+                                        <i class="layui-badge fly-badge-vip" th:if="${article.customerEntity.type == 2 }" th:text="${article.customerEntity.authName}">
+                                        </i>
+                                    </span>
+
+                            </a>
+                            <span th:text="${#dates.format(article.time,'yyyy-MM-dd HH:mm:ss')}"></span>
+                            <span class="fly-list-nums"><i class="iconfont icon-pinglun1" title="评论"></i></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="fly-footer">
+    <p><a  target="_blank">玩具商城</a> 2021 &copy; <a target="_blank">王嵩源 出品</a></p>
+</div>
+
+<script src="/res/layui/layui.js"></script>
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<script src="/base.js"></script>
+<script>
+    layui.config({
+        version: "3.0.0"
+        ,base: '/res/mods/' //这里实际使用时，建议改成绝对路径
+    }).extend({
+        fly: 'index'
+    }).use(['fly','layer'],function () {
+
+    });
+    function sunsec(){
+        window.location.href="/?title="+$("#title").val();
+    }
+
+
+    $(function () {
+        setTimeout(userLv,1000)
+
+    });
+
+
+    function typek(b) {
+        var type = $(b).attr("oid");
+        $(".types").removeClass("layui-this");
+        $(b).addClass("layui-this");
+        if(type==""){
+            $(".article").show();
+        }else{
+            $(".article").hide();
+            $("."+type).show();
+        }
+    }
+
+
+    function yuedu(id) {
+        window.open('/article/info.htmx?id='+id);
+    }
+
+    function login() {
+        layui.layer.open({
+            type: 2,
+            title: '用户登录',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['600px', '445px'],
+            content: '/login.htmx' //iframe的url
+        });
+    }
+
+    function reg() {
+        layui.layer.open({
+            type: 2,
+            title: '游客注册',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['600px', '445px'],
+            content: '/reg.htmx' //iframe的url
+        });
+    }
+
+    function sunmitStu(){
+        window.open("/study.htmx");
+    }
+
+
+    function fabiao() {
+        layui.layer.open({
+            type: 2,
+            title: '发表文章',
+            shadeClose: true,
+            shade: 0.8,
+            area: ['90%', '90%'],
+            content: '/article/add.htmx' //iframe的url
+        });
+    }
+
+</script>
+
+
+</body>
+</html>
